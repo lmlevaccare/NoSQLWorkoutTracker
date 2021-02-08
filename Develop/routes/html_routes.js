@@ -1,7 +1,7 @@
 
 var path = require("path");
 
-//  transfering both html "stats" and "exercise" html files to a given path.
+//  transfering "stats","exercise" and "index" html files to a given paths."index" file is redirecting path to homepage.
 module.exports = function (app) {
  
 app.get('/stats', (req, res) => {
@@ -13,6 +13,8 @@ app.get('/stats', (req, res) => {
     res.sendFile(path.join(__dirname, "../public/exercise.html"));
      
   })
-
+    // app.get('/index', (req, res) => {
+    //     res.redirect(path.join(__dirname, "../public/index.html"));
+    // });
 
 };
