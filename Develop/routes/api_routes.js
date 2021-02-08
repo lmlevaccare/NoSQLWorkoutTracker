@@ -13,20 +13,12 @@ module.exports = function (app) {
                 res.json(err);
             });
     });
-    
+    // update current workout
     app.put("/api/workouts/:id", (req, res) => {
-
-        
-        db.Workout.update(
-          
-            {
-                _id: mongojs.ObjectId(req.params.id)
-            },
-            {
-                $set: {
-                   
+            db.Workout.update(
+            { _id: mongojs.ObjectId(req.params.id)},
+            { $set: {
                     modified: Date.now(),
-                    // exercises: [{
                         id: req.params.id,
                         type: req.body.type,
                         name: req.body.name,
@@ -34,8 +26,6 @@ module.exports = function (app) {
                         weight: req.body.weight,
                         reps: req.body.reps,
                         sets: req.body.sets
-                
-                    // }]
                 }
             },
             (error, data) => {
@@ -43,12 +33,24 @@ module.exports = function (app) {
                     res.send(error);
                 } else {
                     res.send(data);
-                }
             }
-       
-        )
-         
+        })
     })
+    
+    // post new workout
+    app.post("/api/workouts", ({ body }, res) => {
+const newWorkout = new Workout(body);
+  user.setFullName();
+  user.lastUpdatedDate();
+            db.Workout.create(body)
+                .then(data => {
+                    console.log(data);
+            res.json(data);
+                    })
+            .catch(err => {
+             res.status(400).json(err);
+    });
+});
     
 };
 
