@@ -15,7 +15,7 @@ module.exports = function (app) {
     });
     // update current workout
     app.put("/api/workouts/:id", (req, res) => {
-            db.Workout.update(
+            db.Workout.findByIdAndUpdate(
             { _id: mongojs.ObjectId(req.params.id)},
             { $set: {
                     modified: Date.now(),
@@ -38,13 +38,10 @@ module.exports = function (app) {
     })
     
     // post new workout
-    app.post("/api/workouts", ({ body }, res) => {
-const newWorkout = new Workout(body);
-  user.setFullName();
-  user.lastUpdatedDate();
+        app.post("/api/workouts", ({ body }, res) => {
             db.Workout.create(body)
                 .then(data => {
-                    console.log(data);
+                 console.log(data);
             res.json(data);
                     })
             .catch(err => {
