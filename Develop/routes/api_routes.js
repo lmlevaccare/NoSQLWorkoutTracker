@@ -1,9 +1,10 @@
 var db = require("../models");
-const mongojs = require("mongojs");
+// const mongojs = require("mongojs");
 
 
 module.exports = function (app) {
-    // get last workout
+// FIND/GET LAST WORKOUT
+    
     app.get("/api/workouts", (req, res) => {
         db.Workout.find({})
             .then(data => {
@@ -13,31 +14,43 @@ module.exports = function (app) {
                 res.json(err);
             });
     });
-    // update current workout
-    app.put("/api/workouts/:id", (req, res) => {
-            db.Workout.findByIdAndUpdate(
-            { _id: mongojs.ObjectId(req.params.id)},
-            { $set: {
-                    modified: Date.now(),
-                        id: req.params.id,
-                        type: req.body.type,
-                        name: req.body.name,
-                        duration: req.body.duration,
-                        weight: req.body.weight,
-                        reps: req.body.reps,
-                        sets: req.body.sets
-                }
-            },
-            (error, data) => {
-                if (error) {
-                    res.send(error);
-                } else {
-                    res.send(data);
+
+
+// SOURCE USED FOR PUT FUNCTION : https://github.com/SirPotatoIV/fitness-tracker/blob/master/routes/apiRoutes.js
+// FIND SAVED WORKOUT BY ID AND AND UPDATE SAVED WORKOUT
+    
+    app.put("/api/workouts/:id", ({ body, params }, res) => {
+  
+        const workoutId = params.id;
+        let savedExercises = [];
+
+
+        db.Workout.find({_id: workoutId})
+            .then(dbWorkout => {
+    
+                savedExercises = dbWorkout[0].exercises;
+                res.json(dbWorkout[0].exercises);
+                let allExercises = [...savedExercises, body]
+                console.log(allExercises)
+                updateWorkout(allExercises)
+            })
+            .catch(err => {
+                res.json(err);
+            });
+
+        function updateWorkout(exercises){
+            db.Workout.findByIdAndUpdate(workoutId, {exercises: exercises}, function(err, doc){
+            if(err){
+                console.log(err)
             }
-        })
+
+            })
+        }
+            
     })
     
-    // post new workout
+//  POST NEW WORKOUT
+    
         app.post("/api/workouts", ({ body }, res) => {
             db.Workout.create(body)
                 .then(data => {
@@ -50,6 +63,3 @@ module.exports = function (app) {
 });
     
 };
-
-
-
